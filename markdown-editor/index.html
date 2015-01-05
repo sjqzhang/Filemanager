@@ -120,11 +120,11 @@
 </head>
 <body>
     <div id="in">
-        <div id="toolbar" style="position:relative;top:10px;float:right;z-index:999;">
+        <div id="toolbar" style="position:relative;top:10px;float:right;z-index:99;">
 
-            <span id="msg" style="border:1px solid;display:inline-block;cursor:pointer;" > </span>
-            <span id="btnNew" style="border:1px solid;display:inline-block;cursor:pointer;" >新建 </span>
-            <span id="btnSave" style="border:1px solid;display:inline-block;cursor:pointer;" >保存 </span>
+            <div id="msg" style="border:1px solid;display:inline-block;cursor:pointer;" > </div>
+            <div id="btnNew" style="border:1px solid;display:inline-block;cursor:pointer;" >新建 </div>
+            <div id="btnSave" style="border:1px solid;display:inline-block;cursor:pointer;z-index:1000;" >保存 </div>
 
         </div>
         <form><textarea id="code">
@@ -171,7 +171,7 @@ the inspiration to this, and some handy implementation hints, came.
 
         <div id="toolbar2" style="position:relative;top:10px;float:right;z-index:999;">
 
-            <span id="btnExport" style="border:1px solid;display:inline-block;cursor:pointer;" >导出 </span>
+            <span id="btnExport" style="border:1px solid;display:inline-block;cursor:pointer;font-size:12px;" >导出 </span>
 
             <div id="download"></div>
         </div>
@@ -313,6 +313,7 @@ the inspiration to this, and some handy implementation hints, came.
 
 
 
+
       var filepath=request('filepath');
 
 
@@ -332,21 +333,20 @@ the inspiration to this, and some handy implementation hints, came.
       $('#btnNew').click(function(){
 
          var name=prompt("请输入新的文件路径及文件名!",filepath);
-         if(name!=filepath){
+         if(name!=filepath&&$.trim(name).length>0){
             filepath=name;
          }
 
       })
 
-      $('#btnsave').click(function(){
+      $('#btnSave').click(function (){
 
-             var md=editor.getvalue();
 
-              $.post('file.php',{filepath: filepath,md:md,action:'save'},function(data){
-                    //editor.setvalue(data);
-              });
-
-    });
+             var md=editor.getValue();
+              $.post('file.php',{filepath:filepath,md:md,action:'save'},function(data){
+                   editor.setValue(data);
+                });
+      });
 
 
     function download(url,param){
