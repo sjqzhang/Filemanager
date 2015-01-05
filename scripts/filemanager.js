@@ -1254,7 +1254,7 @@ var getFileInfo = function(file) {
         var filepath=encodeURIComponent(data.Path);
 
         if(data['File Type']=='md'||data['File Type']=='txt'||data['File Type']=='sh'||data['File Type']=='php'||data['File Type']=='py'){
-                $('.vsplitbar,#fileinfo,#filetree,#splitter,#mCSB_2,#preview').css({'height':$(window).height()-20});
+                $('.vsplitbar,#fileinfo,#filetree,#splitter,#mCSB_2,#preview').css({'height':$(window).height()-80});
                 $('#preview').html('<iframe style="width:100%;height:100%;" src="/Filemanager/markdown-editor/index.html?filepath='+filepath+'&t='+Math.random()+'"></iframe>');
                 $('#toolbar').hide();
         } else {
