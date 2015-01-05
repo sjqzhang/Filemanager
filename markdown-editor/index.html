@@ -43,7 +43,7 @@
       position: fixed;
       top: 0;
       right: 0;
-      left: 50%;
+     left: 50%;
       bottom: 0;
       overflow: auto;
       padding: 10px;
@@ -119,10 +119,31 @@
   </style>
 </head>
 <body>
+
+    <div>
     <div id="in">
         <div id="toolbar" style="position:relative;top:10px;float:right;z-index:99;">
 
+            <div id="inputBar" style="display:none;float:left;">URL:<input type="text" id="url" style="width:400px;"/>
+                <select  style="width:80px;" id="selector" name="selector" >
+                    <option value="body">body</option>
+                </select>
+                <input type="checkbox" name="istable" id="istable">表格
+
+                <input type="button" id="btnLoad" value="Load" />
+
+                File Path:<input type="text" id="filename" style="width:450px;"/>
+
+                <!--
+                <input type="button" id="btnSave" value="Save" />
+
+                <span id="msg"></span>
+                -->
+
+            </div>
+
             <div id="msg" style="border:1px solid;display:inline-block;cursor:pointer;" > </div>
+            <div id="btnNetShow" style="border:1px solid;display:inline-block;cursor:pointer;" >网载 </div>
             <div id="btnNew" style="border:1px solid;display:inline-block;cursor:pointer;" >新建 </div>
             <div id="btnSave" style="border:1px solid;display:inline-block;cursor:pointer;z-index:1000;" >保存 </div>
 
@@ -167,10 +188,13 @@ the inspiration to this, and some handy implementation hints, came.
  * [highlight.js](http://softwaremaniacs.org/soft/highlight/en/) for syntax highlighting in output code blocks
  * [js-deflate](https://github.com/dankogai/js-deflate) for gzipping of data to make it fit in URLs
 </textarea></form></div>
+
+<div class="vsplitbar"></div>
 <div>
 
         <div id="toolbar2" style="position:relative;top:10px;float:right;z-index:999;">
 
+            <span id="btnMax" style="border:1px solid;display:inline-block;cursor:pointer;font-size:12px;" >最大化 </span>
             <span id="btnExport" style="border:1px solid;display:inline-block;cursor:pointer;font-size:12px;" >导出 </span>
 
             <div id="download"></div>
@@ -181,7 +205,7 @@ the inspiration to this, and some handy implementation hints, came.
 
     </div>
 </div>
-
+</div>
   <script>
 
 
@@ -283,9 +307,14 @@ the inspiration to this, and some handy implementation hints, came.
     }
 
     document.addEventListener('keydown', function(e){
+
       if(e.keyCode == 83 && (e.ctrlKey || e.metaKey)){
         e.preventDefault();
         save();
+        return false;
+      } else if(e.keyCode == 77 && (e.ctrlKey || e.metaKey)){
+        e.preventDefault();
+        $('#btnMax').trigger('click');
         return false;
       }
     })
@@ -316,34 +345,45 @@ the inspiration to this, and some handy implementation hints, came.
 
       var filepath=request('filepath');
 
+      var netdownload=false;
 
       filepath=decodeURIComponent(filepath);
 
 
-      $.post('file.php',{filepath: decodeURIComponent(filepath),action:'load'},function(data){
-
-
-
+      $.post('php/file.php',{filepath: decodeURIComponent(filepath),action:'load'},function(data){
             editor.setValue(data);
-
-
-
+            $('#btnMax').trigger('click');
       });
 
-      $('#btnNew').click(function(){
+
+
+      function set_file_path(){
 
          var name=prompt("请输入新的文件路径及文件名!",filepath);
          if(name!=filepath&&$.trim(name).length>0){
             filepath=name;
          }
 
+
+      }
+
+      $('#btnNew').click(function(){
+
+          set_file_path();
+
       })
 
       $('#btnSave').click(function (){
 
 
+            if(netdownload){
+
+                filepath=$('#filename').val();
+            }
+
+
              var md=editor.getValue();
-              $.post('file.php',{filepath:filepath,md:md,action:'save'},function(data){
+              $.post('php/file.php',{filepath:filepath,md:md,action:'save'},function(data){
                    editor.setValue(data);
                 });
       });
@@ -369,10 +409,60 @@ the inspiration to this, and some handy implementation hints, came.
               var html=  $('#out').html();
               var param={filepath: filepath,html:html,action:'export'}
 
-              download('file.php',param);
+              download('php/file.php',param);
 
     });
 
+
+    $('#btnNetShow').click(function(){
+
+
+        $('#inputBar').toggle();
+
+
+    })
+
+    $('#btnLoad').click(function(){
+        var url=$('#url').val();
+        var selector=$('#selector').val()
+        var istable=$('#istable').attr('checked')?1:0;
+        $('#msg').html('<font color="green">加载中..！</font>');
+        $.post('php/info.php',{url:url,selector:selector,istable:istable,action:'load'},function(md){
+            $('#msg').hide();
+            var data= eval('('+md+')');
+            var md= data.md;
+            editor.setValue(md);
+            $('#filename').val(data.title);
+            var html="";
+            var flag=false;
+            for(var op in data.selector){
+                if(data.selector[op]==selector){
+                    flag=true;
+                }
+                html+='<option value="'+data.selector[op]+'" >'+    data.selector[op] +'</option>';
+            }
+            if(!flag){
+                $('#selector').html(html);
+            }
+            netdownload=true;
+        })
+
+    });//end click
+
+    $('#btnMax').click(function(){
+
+        if($('#in').is(":visible") ) {
+                $('#in').hide()
+                $('#out').css({'position':'relative','left':'0px'})
+                $('#btnMax').text('最小化');
+            } else {
+                $('#in').show()
+                $('#out').css({'position':'fixed','left':'50%'})
+                $('#btnMax').text('最大化');
+
+            }
+
+    });
 
 
     var GoSquared = { acct: 'GSN-265185-D' };
