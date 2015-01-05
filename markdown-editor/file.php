@@ -26,6 +26,21 @@ function write($filepath,$content){
 }
 
 
+function export($filepath, $html){
+    $dir= dirname(__FILE__);
+    $tmpfile=tmpfile();
+    $tpl= read($dir."/export.html");
+    $tpl= preg_replace('/\{html\}/',$html,$tpl);
+    Header("Content-type: application/octet-stream");
+    Header("Accept-Ranges: bytes");
+    Header("Accept-Length: ".strlen($tpl));
+    //Header("Content-Disposition: attachment; filename=".basename($filepath));
+    Header("Content-Disposition: attachment; filename="."导出.html");
+
+    echo $tpl;
+
+}
+
 
 if($action=='load'){
 
@@ -38,5 +53,14 @@ if($action=='load'){
     write($filepath,$md);
 
     echo $md;
+} else if($action=='export'){
+
+
+
+    $html=$_REQUEST['html'];
+
+    export($filepath,$html);
+
+
 }
 

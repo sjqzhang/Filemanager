@@ -120,7 +120,13 @@
 </head>
 <body>
     <div id="in">
-        <div id="btnSave" style="position:relative;top:10px;border:1px solid;float:right;z-index:999;cursor:pointer;">保存</div>
+        <div id="toolbar" style="position:relative;top:10px;float:right;z-index:999;">
+
+            <span id="msg" style="border:1px solid;display:inline-block;cursor:pointer;" > </span>
+            <span id="btnNew" style="border:1px solid;display:inline-block;cursor:pointer;" >新建 </span>
+            <span id="btnSave" style="border:1px solid;display:inline-block;cursor:pointer;" >保存 </span>
+
+        </div>
         <form><textarea id="code">
 # (GitHub-Flavored) Markdown Editor
 
@@ -161,7 +167,20 @@ the inspiration to this, and some handy implementation hints, came.
  * [highlight.js](http://softwaremaniacs.org/soft/highlight/en/) for syntax highlighting in output code blocks
  * [js-deflate](https://github.com/dankogai/js-deflate) for gzipping of data to make it fit in URLs
 </textarea></form></div>
-  <div id="out"></div>
+<div>
+
+        <div id="toolbar2" style="position:relative;top:10px;float:right;z-index:999;">
+
+            <span id="btnExport" style="border:1px solid;display:inline-block;cursor:pointer;" >导出 </span>
+
+            <div id="download"></div>
+        </div>
+
+    <div id="out">
+
+
+    </div>
+</div>
 
   <script>
 
@@ -297,7 +316,8 @@ the inspiration to this, and some handy implementation hints, came.
       var filepath=request('filepath');
 
 
-     // alert(filepath)
+      filepath=decodeURIComponent(filepath);
+
 
       $.post('file.php',{filepath: decodeURIComponent(filepath),action:'load'},function(data){
 
@@ -309,15 +329,51 @@ the inspiration to this, and some handy implementation hints, came.
 
       });
 
-      $('#btnSave').click(function(){
+      $('#btnNew').click(function(){
 
-             var md=editor.getValue();
-
-              $.post('file.php',{filepath: decodeURIComponent(filepath),md:md,action:'save'},function(data){
-                    editor.setValue(data);
-              });
+         var name=prompt("请输入新的文件路径及文件名!",filepath);
+         if(name!=filepath){
+            filepath=name;
+         }
 
       })
+
+      $('#btnsave').click(function(){
+
+             var md=editor.getvalue();
+
+              $.post('file.php',{filepath: filepath,md:md,action:'save'},function(data){
+                    //editor.setvalue(data);
+              });
+
+    });
+
+
+    function download(url,param){
+    var form=$("<form>");
+        form.attr("style","display:none");
+        form.attr("target","_blank");
+        form.attr("method","post");
+        form.attr("action",url);
+        for(var name in param){
+            var input1=$("<textarea>");
+            input1.attr("name",name);
+            input1.attr("value",param[name]);
+            form.append(input1);
+        }
+        $("body").append(form);
+        form.submit();
+    }
+
+      $('#btnExport').click(function(){
+              var html=  $('#out').html();
+              var param={filepath: filepath,html:html,action:'export'}
+
+              download('file.php',param);
+
+    });
+
+
 
     var GoSquared = { acct: 'GSN-265185-D' };
   </script>

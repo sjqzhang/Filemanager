@@ -1,4 +1,25 @@
-﻿<!DOCTYPE html>
+﻿<?php
+function webAuthenticate($user,$pass)
+{
+    if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])  || !isset($user)  || !isset($pass)
+        || $_SERVER['PHP_AUTH_USER']!=$user | $_SERVER['PHP_AUTH_PW']!=$pass
+    )
+    {
+        header('WWW-Authenticate: Basic realm="Authentication System"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo "Unauthorized! ";
+        exit;
+    }
+    return true;
+}
+
+if(!webAuthenticate("jqzhang","mz@2010"))        //验证用户
+{
+        die();
+}
+
+?>
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
