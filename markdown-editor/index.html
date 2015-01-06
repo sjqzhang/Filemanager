@@ -357,7 +357,9 @@ the inspiration to this, and some handy implementation hints, came.
 
       $.post('php/file.php',{filepath: decodeURIComponent(filepath),action:'load'},function(data){
             editor.setValue(data);
-            $('#btnMax').trigger('click');
+            if($.trim(data)!=''){
+                 $('#btnMax').trigger('click');
+            }
       });
 
 

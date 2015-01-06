@@ -347,6 +347,67 @@ class Filemanager {
 		return $array;
 	}
 
+	public function touchfile() {
+
+		$suffix='';
+
+		if(substr($this->get['old'],-1,1)=='/') {
+			$this->get['old'] = substr($this->get['old'],0,(strlen($this->get['old'])-1));
+			$suffix='/';
+		}
+		$tmp = explode('/',$this->get['old']);
+		$filename = $tmp[(sizeof($tmp)-1)];
+		$path = str_replace('/' . $filename,'',$this->get['old']);
+
+		$new_file = $this->getFullPath($path . '/' . $this->get['new']). $suffix;
+		$old_file = $this->getFullPath($this->get['old']) . $suffix;
+
+        $new_file= $old_file.$this->get['new'];
+
+
+
+		if(!$this->has_permission('rename') || !$this->is_valid_path($old_file)) {
+			$this->error("No way.");
+		}
+
+		// check if not requesting main FM userfiles folder
+		if($this->is_root_folder($old_file)) {
+			$this->error(sprintf($this->lang('NOT_ALLOWED')),true);
+		}
+
+		// For file only - we check if the new given extension is allowed regarding the security Policy settings
+		if(is_file($old_file) && $this->config['security']['allowChangeExtensions'] && !$this->is_allowed_file_type($new_file)) {
+			$this->error(sprintf($this->lang('INVALID_FILE_TYPE')));
+		}
+
+
+		if(file_exists ($new_file)) {
+			if($suffix=='/' && is_dir($new_file)) {
+				$this->error(sprintf($this->lang('DIRECTORY_ALREADY_EXISTS'),$this->get['new']));
+			}
+			if($suffix=='' && is_file($new_file)) {
+				$this->error(sprintf($this->lang('FILE_ALREADY_EXISTS'),$this->get['new']));
+			}
+		}
+
+
+		if(!touch($new_file)) {
+			if(is_dir($old_file)) {
+				$this->error(sprintf($this->lang('ERROR_RENAMING_DIRECTORY'),$filename,$this->get['new']));
+			} else {
+				$this->error(sprintf($this->lang('ERROR_RENAMING_FILE'),$filename,$this->get['new']));
+			}
+		}
+		$array = array(
+				'Error'=>"",
+				'Code'=>0,
+				'Old Path'=>$this->formatPath($this->get['old'].$suffix),
+				'Old Name'=>$filename,
+				'New Path'=>$this->formatPath($path . '/' . $this->get['new'].$suffix),
+				'New Name'=>$this->get['new']
+		);
+		return $array;
+	}
 	public function rename() {
 
 		$suffix='';

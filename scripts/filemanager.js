@@ -93,7 +93,7 @@ var fileConnector = config.options.fileConnector || 'connectors/' + config.optio
 
 // Read capabilities from config files if exists
 // else apply default settings
-var capabilities = config.options.capabilities || new Array('select', 'download', 'rename', 'move', 'delete', 'replace');
+var capabilities = config.options.capabilities || new Array('select', 'download', 'rename','touch', 'move', 'delete', 'replace');
 
 // Get localized messages from file
 // through culture var or from URL
@@ -636,6 +636,103 @@ var selectItem = function(data) {
 	}
 };
 
+// add New File the current item and returns the new name.
+// list views.
+var touchItem = function(data) {
+	var finalName = '';
+    console.log(data);
+	var fileName = config.security.allowChangeExtensions ? data['Filename'] : getFilename(data['Filename']);
+	var msg =   ' input file name: <input id="rname" name="rname" type="text" value="' + fileName + '" />';
+
+	var getNewName = function(v, m){
+		if(v != 1) return false;
+		rname = m.children('#rname').val();
+
+		if(rname != ''){
+
+			var givenName = rname;
+
+ 			if (! config.security.allowChangeExtensions) {
+				givenName = nameFormat(rname);
+				var suffix = getExtension(data['Filename']);
+				if(suffix.length > 0) {
+					givenName = givenName + '.' + suffix;
+				}
+ 			}
+
+ 			// File only - Check if file extension is allowed
+			if (data['Path'].charAt(data['Path'].length-1) != '/'  && !isAuthorizedFile(givenName)) {
+				var str = '<p>' + lg.INVALID_FILE_TYPE + '</p>';
+				if(config.security.uploadPolicy == 'DISALLOW_ALL') {
+					str += '<p>' + lg.ALLOWED_FILE_TYPE +  config.security.uploadRestrictions.join(', ') + '.</p>';
+				}
+				if(config.security.uploadPolicy == 'ALLOW_ALL') {
+					str += '<p>' + lg.DISALLOWED_FILE_TYPE +  config.security.uploadRestrictions.join(', ') + '.</p>';
+				}
+				$("#filepath").val('');
+				$.prompt(str);
+				return false;
+			}
+
+			var oldPath = data['Path'];
+			var connectString = fileConnector + '?mode=touchfile&old=' + data['Path'] + '&new=' + givenName;
+
+			$.ajax({
+				type: 'GET',
+				url: connectString,
+				dataType: 'json',
+				async: false,
+				success: function(result){
+					if(result['Code'] == 0){
+						var newPath = result['New Path'];
+						var newName = result['New Name'];
+						var oldPath = result['Old Path'];
+
+						updateNode(oldPath, newPath, newName);
+
+						var title = $("#preview h1").attr("title");
+
+						if (typeof title !="undefined" && title == oldPath) {
+							$('#preview h1').text(newName);
+						}
+
+						if($('#fileinfo').data('view') == 'grid'){
+							$('#fileinfo img[data-path="' + oldPath + '"]').parent().next('p').text(newName);
+							$('#fileinfo img[data-path="' + oldPath + '"]').attr('data-path', newPath);
+						} else {
+							$('#fileinfo td[data-path="' + oldPath + '"]').text(newName);
+							$('#fileinfo td[data-path="' + oldPath + '"]').attr('data-path', newPath);
+						}
+						$("#preview h1").html(newName);
+
+						// actualized data for binding
+						data['Path']=newPath;
+						data['Filename']=newName;
+
+						// Bind toolbar functions.
+						$('#fileinfo').find('button#rename, button#delete, button#download').unbind();
+						bindToolbar(data);
+
+						if(config.options.showConfirmation) $.prompt("create file  successfull");
+					} else {
+						$.prompt(result['Error']);
+					}
+
+					finalName = result['New Name'];
+				}
+			});
+		}
+	};
+	var btns = {};
+	btns['Ok'] = true;
+	btns[lg.cancel] = false;
+	$.prompt(msg, {
+		callback: getNewName,
+		buttons: btns
+	});
+
+	return finalName;
+};
 // Renames the current item and returns the new name.
 // Called by clicking the "Rename" button in detail views
 // or choosing the "Rename" contextual menu option in
@@ -1188,6 +1285,9 @@ var setMenus = function(action, path) {
 			case 'rename':
 				var newName = renameItem(data);
 				break;
+			case 'touch':
+				var newName = touchItem(data);
+				break;
 
 			case 'replace':
 				replaceItem(data);
@@ -1257,13 +1357,13 @@ var getFileInfo = function(file) {
                 $('.vsplitbar,#fileinfo,#filetree,#splitter,#mCSB_2,#preview').css({'height':$(window).height()-80});
                 $('#preview').html('<iframe style="width:100%;height:100%;" src="/Filemanager/markdown-editor/index.html?filepath='+filepath+'&t='+Math.random()+'"></iframe>');
                 $('#toolbar').hide();
+                return;
         } else {
 
                 $('#toolbar').show();
 
         }
 
-        return;
 		if(data['Code'] == 0){
 			$('#fileinfo').find('h1').text(data['Filename']).attr('title', file);
 
@@ -1619,6 +1719,7 @@ $(function(){
 		$('#itemOptions a[href$="#select"]').append(lg.select);
 		$('#itemOptions a[href$="#download"]').append(lg.download);
 		$('#itemOptions a[href$="#rename"]').append(lg.rename);
+		$('#itemOptions a[href$="#touch"]').append('Touch');
 		$('#itemOptions a[href$="#move"]').append(lg.move);
 		$('#itemOptions a[href$="#replace"]').append(lg.replace);
 		$('#itemOptions a[href$="#delete"]').append(lg.del);

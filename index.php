@@ -86,6 +86,7 @@ if(!webAuthenticate("jqzhang","mz@2010"))        //验证用户
 	<li class="select"><a href="#select"></a></li>
 	<li class="download"><a href="#download"></a></li>
 	<li class="rename"><a href="#rename"></a></li>
+	<li class="touch"><a href="#touch"></a></li>
 	<li class="move"><a href="#move"></a></li>
 	<li class="replace"><a href="#replace"></a></li>
 	<li class="delete separator"><a href="#delete"></a></li>

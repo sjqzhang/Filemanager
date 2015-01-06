@@ -465,6 +465,7 @@ div.clip {
 #move span, .contextMenu li.move a { background-image: url(../images/move.png); }
 #replace span, .contextMenu li.replace a { background-image: url(../images/replace.png); }
 #delete span, .contextMenu li.delete a { background-image: url(../images/bin_closed.png); }
+#touch span, .contextMenu li.touch a { background-image: url(../images/plus.png); }
 #upload span { background-image: url(../images/upload.png); }
 #upload span.loading { background-image: url(../images/ajax-loader.gif);color:#555555;font-size:0.9em; }
 #parentfolder span { background-image: url(../images/parentfolder.png); }
