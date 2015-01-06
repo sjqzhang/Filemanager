@@ -31,7 +31,7 @@ function write($filepath,$content){
    }
 
     $fp=fopen($filepath,'w');
-    fwrite($fp,$content);
+    return fwrite($fp,$content);
     fclose($fp);
 }
 
@@ -60,9 +60,10 @@ if($action=='load'){
 
     $md=$_REQUEST['md'];
 
-    write($filepath,$md);
+   $wc=write($filepath,$md);
 
-    echo $md;
+   echo json_encode(array('md'=>$md,'wc'=>$wc));
+
 } else if($action=='export'){
 
 

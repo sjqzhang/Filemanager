@@ -154,7 +154,7 @@
 
 Basic useful feature list:
 
- * Ctrl/Cmd + S to save the file
+ * Ctrl/Cmd + Q to save the file
  * Drag and drop a file into here to load it
  * File contents are saved in the URL so you can share files
 
@@ -308,15 +308,20 @@ the inspiration to this, and some handy implementation hints, came.
 
     document.addEventListener('keydown', function(e){
 
-      if(e.keyCode == 83 && (e.ctrlKey || e.metaKey)){
-        e.preventDefault();
-        save();
-        return false;
-      } else if(e.keyCode == 77 && (e.ctrlKey || e.metaKey)){
-        e.preventDefault();
-        $('#btnMax').trigger('click');
-        return false;
-      }
+        if(e.keyCode == 81 && (e.ctrlKey || e.metaKey)){
+            e.preventDefault();
+            save();
+            return false;
+            } else if(e.keyCode == 77 && (e.ctrlKey || e.metaKey)){
+            e.preventDefault();
+            $('#btnMax').trigger('click');
+            editor.focus();
+            return false;
+            } else if(e.keyCode == 83 && (e.ctrlKey || e.metaKey)){
+            e.preventDefault();
+            $('#btnSave').trigger('click');
+            return false;
+        }
     })
 
     var hashto;
@@ -367,6 +372,26 @@ the inspiration to this, and some handy implementation hints, came.
 
       }
 
+
+      function showMsg(msg,type){
+
+        type=type||1;
+
+        $('#msg').show();
+
+        if(type==1) {
+             $('#msg').html('<font color="green">'+msg+'</font>');
+         } else {
+             $('#msg').html('<font color="red">'+msg+'</font>');
+        }
+
+        setTimeout(function(){
+
+            $('#msg').hide();
+
+            },2000)
+      }
+
       $('#btnNew').click(function(){
 
           set_file_path();
@@ -384,9 +409,18 @@ the inspiration to this, and some handy implementation hints, came.
 
              var md=editor.getValue();
               $.post('php/file.php',{filepath:filepath,md:md,action:'save'},function(data){
-                   editor.setValue(data);
+                   data=eval('('+data+')');
+                   editor.setValue(data.md);
+                   if(data.wc) {
+                       showMsg('保存成功',1);
+                   } else {
+                       showMsg('保存失败',1);
+                   }
                 });
       });
+
+
+
 
 
     function download(url,param){
@@ -416,9 +450,12 @@ the inspiration to this, and some handy implementation hints, came.
 
     $('#btnNetShow').click(function(){
 
-
         $('#inputBar').toggle();
-
+        if($('#inputBar').is('visible')){
+            setTimeout(function(){
+                $('#inputBar').hide();
+            },5000)
+        }
 
     })
 
