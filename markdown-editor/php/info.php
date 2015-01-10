@@ -25,8 +25,14 @@ if($action=='load'){
 
 	$title=$h2md->get_title($html);
 
+    phpQuery::newDocument($html);
 
-	phpQuery::newDocument($html);
+    //foreach(pq('.code,.codebody,.bodycode') as $code){
+
+    //   pq($code).replaceAll("```\n"+pq($code)->htmlOuter()+"\n```");
+
+    //}
+
 	$content= pq($selector)->htmlOuter();
 
 

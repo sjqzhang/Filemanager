@@ -409,6 +409,12 @@ the inspiration to this, and some handy implementation hints, came.
             if(netdownload){
 
                 filepath=$('#filename').val();
+
+                if(filepath.lastIndexOf(".")==-1){
+
+                    filepath=filepath+".md";
+
+                }
             }
 
 
@@ -478,7 +484,7 @@ the inspiration to this, and some handy implementation hints, came.
             var _title= data.title.split(/\//i);
             _title=_title[_title.length-1];
              _path= filepath.substring(0, filepath.lastIndexOf('/'))
-            $('#filename').val(_path+'/'+_title+'.md');
+            $('#filename').val(_path+'/'+_title);
             var html="";
             var flag=false;
             for(var op in data.selector){
