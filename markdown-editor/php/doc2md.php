@@ -102,10 +102,6 @@ class Html2md {
 			'/<\/li>/i',
 			'/<\/p>/i',
 			'/<\/div>/i',
-			'/&nbsp;/i',
-			'/&lt;/i',
-			'/&gt;/i',
-			'/&quot;/i',
 			'/<script[^>]*?>[\s\S]*?<\/script>/i',
 			'/<strong[^>]*?>[\s\S]*?<\/strong>/i',
 			'/<!--[\s\S]*?-->/'
@@ -117,10 +113,6 @@ class Html2md {
 			"</li>\r\n",
 			"</p>\r\n\r\n",
 			"</div>\r\n\r\n",
-			" ",
-			"<",
-			">",
-			'"',
 			"",
 			"\r\n\r\n#### $0\r\n\r\n",
 			"",
@@ -133,6 +125,19 @@ class Html2md {
 
 
 		 $markup= preg_replace('/<\w+[^>]*?>|<\/\w+>/i',"",$markup);
+		$markup= preg_replace(array(
+			'/&nbsp;/i',
+			'/&lt;/i',
+			'/&gt;/i',
+			'/&quot;/i',
+			),array(
+			" ",
+			"<",
+			">",
+			'"',
+			"",
+			),$markup);
+
 
 		 // $markup= preg_replace('/^[\r\n]${3,}/i',"xx",$markup);
 

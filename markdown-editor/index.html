@@ -142,11 +142,14 @@
 
             </div>
 
+
+            <div style="float:right;">
             <div id="msg" style="border:1px solid;display:inline-block;cursor:pointer;" > </div>
             <div id="btnNetShow" style="border:1px solid;display:inline-block;cursor:pointer;" >网载 </div>
             <div id="btnNew" style="border:1px solid;display:inline-block;cursor:pointer;" >新建 </div>
             <div id="btnSave" style="border:1px solid;display:inline-block;cursor:pointer;z-index:1000;" >保存 </div>
 
+             </div>
         </div>
         <form><textarea id="code">
 # (GitHub-Flavored) Markdown Editor
@@ -453,10 +456,10 @@ the inspiration to this, and some handy implementation hints, came.
     $('#btnNetShow').click(function(){
 
         $('#inputBar').toggle();
-        if($('#inputBar').is('visible')){
+        if($('#inputBar').is(':visible')){
             setTimeout(function(){
                 $('#inputBar').hide();
-            },5000)
+            },1000*10)
         }
 
     })
@@ -471,7 +474,11 @@ the inspiration to this, and some handy implementation hints, came.
             var data= eval('('+md+')');
             var md= data.md;
             editor.setValue(md);
-            $('#filename').val(data.title);
+            //$('#filename').val(data.title);
+            var _title= data.title.split(/\//i);
+            _title=_title[_title.length-1];
+             _path= filepath.substring(0, filepath.lastIndexOf('/'))
+            $('#filename').val(_path+'/'+_title+'.md');
             var html="";
             var flag=false;
             for(var op in data.selector){
