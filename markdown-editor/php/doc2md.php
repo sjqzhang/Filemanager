@@ -15,10 +15,18 @@ class Html2md {
 				return $match[0];
 			}
 		}
+		function innerlink2md($match){
+            if(preg_match('/id=[\"\'](.*?)[\'\"]/',$match[0],$match1)){
+				return preg_replace('/id=[\"\'](.*?)[\'\"]/', $match[0]."&lt;span id=\"$1\" &gt;&lt;/span&gt;", $match1[0]);
+			//	return $match[0]."&lt;span id=\"$1\" &gt;&lt;/span&gt;";
+			}else {
+				return $match[0];
+			}
+		}
 
 		function h2md($match){
 			$h=trim($match[1]);
-			return "\r\n#### ".$h;
+			return "\r\n#### ".$h."\r\n";
 		}
 
 		function url2md($match){
@@ -60,7 +68,31 @@ class Html2md {
 		}
 
 
+
+
+
+    function get_inner_link($content){
+
+        if( preg_match_all('/href="#([^"]+?)"/',$content,$links)){
+            return $links[1];
+        } else {
+            return '';
+        }
+
+    }
+
+
 	function parse($markup,$istable=true){
+
+
+
+       $links=$this->get_inner_link($markup);
+
+       $links=join('|',$links);
+
+
+	    $markup= preg_replace_callback("/<\w[^>]*id=\"($links)\"[^>]*?>/", array($this,'innerlink2md'),$markup);
+
 
 
 
@@ -87,7 +119,7 @@ class Html2md {
 
 
 
-		$markup= preg_replace_callback('/<h\d>([\s\S]*?)<\/h\d>/i', array($this,'h2md'),$markup);
+		$markup= preg_replace_callback('/<h\d[^>]*?>([^<]*?)<\/h\d>/i', array($this,'h2md'),$markup);
 		$markup= preg_replace_callback('/<a\s+[^>]+?>([\s\S]*?)<\/a>/im',array($this, 'url2md'),$markup);
 
 
@@ -244,20 +276,20 @@ class Html2md {
 		$content= preg_replace('/<base[^>]*>|<\/base>/','',$content);
 
 		$pattens=array(
+            /*'/href="\#([^"]+?)"/i',*/
 			'/src="\//i',
 			'/href="\//i',
-			'/href="#/i',
-			'/href="(?!http)([^"]*)"/i',
-			'/href=\'(?!http)([^\']*)\'/i',
+			'/href="(?!http)(?!#)([^"]*)"/i',
+			'/href=\'(?!http)(?!#)([^\']*)\'/i',
 			'/src="(?!http)([^"]*)"/i',
 			'/src=\'(?!http)([^\']*)\'/i',
 
 		);
 
 		$replaces=array(
+            /*'href="#\1"',*/
 			'src="'.$abs_url.'/',
 			'href="'.$abs_url.'/',
-			'href="#/',
 			'href="'.$rela_url.'\1"',
 			'href=\''.$rela_url.'\1\'',
 			'src="'.$rela_url.'\1"',
