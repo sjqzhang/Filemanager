@@ -421,7 +421,7 @@ the inspiration to this, and some handy implementation hints, came.
              var md=editor.getValue();
               $.post('php/file.php',{filepath:filepath,md:md,action:'save'},function(data){
                    data=eval('('+data+')');
-                   editor.setValue(data.md);
+                 //  editor.setValue(data.md);
                    if(data.wc) {
                        showMsg('保存成功',1);
                    } else {
