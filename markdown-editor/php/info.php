@@ -25,29 +25,23 @@ if($action=='load'){
 
 	$title=$h2md->get_title($html);
 
-    phpQuery::newDocument($html);
+    $doc=phpQuery::newDocument($html);
 
-//    foreach(pq('.code,.codebody,.bodycode') as $code){
-//
-//        $htmlcode=pq($code)->htmlOuter();
-//        $htmlinner=pq($code)->html();
-//        //echo $htmlinner;
-//
-//       $html=  str_replace($htmlcode,'<pre>'+$htmlinner+'</pre>',$html);
-//
-//        echo $html;die;
-//      // $html=  str_replace($htmlcode,"xxxxxxxxxxxxxxxxxxxxxx",$html);
-//
-//        //pq($code)->replacewith("<div>\r\n```\r\n"+$htmlcode+"\n```\r\n</div>");
-//     //   pq($code)->replaceWith("<pre>"+$htmlcode+"</pre>");
-//
-//    }
-//
-//
-//    echo $html;die;
-//
-//
-//    phpQuery::newDocument($html);
+    $codes=pq('.code,.codebody,.bodycode');
+    foreach($codes as $code){
+
+        $htmlcode=pq($code)->htmlOuter();
+        pq($code)->replaceWith("<pre>".$htmlcode."</pre>");
+
+    }
+
+
+  //  $html=pq('')->htmlOuter();
+
+   // echo $html;die;
+
+   // phpQuery::unloadDocuments($doc);
+   // phpQuery::newDocument($html);
 
     //echo $html;die;
 

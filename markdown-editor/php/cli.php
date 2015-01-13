@@ -60,6 +60,15 @@ function download($url, $options){
     $md=new Html2md();
     $html= $md->url_get($url['href']);
     phpQuery::newDocument($html);
+
+    $codes=pq('.code,.codebody,.bodycode,.example_code');
+    foreach($codes as $code){
+
+        $htmlcode=pq($code)->htmlOuter();
+        pq($code)->replaceWith("<pre>".$htmlcode."</pre>");
+
+    }
+
     $content= pq($options['s'])->htmlOuter();
 
     if(isset($options['t'])){
