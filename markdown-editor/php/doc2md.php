@@ -40,8 +40,8 @@ class Html2md {
 		function table2md($match){
 			$markup=$match[0];
 			$markup=  preg_replace('/[\r\n]*/i',"",$markup);
-			$markup=  preg_replace('/<tr[^>]*?>[\r\n\t\s]*<th>/','|',$markup);
-			$markup=  preg_replace('/<tr[^>]*?>[\r\n\t\s]*?<td>/','|',$markup);
+			$markup=  preg_replace('/<tr[^>]*?>[\r\n\t\s]*<th[^>]*?>/','|',$markup);
+			$markup=  preg_replace('/<tr[^>]*?>[\r\n\t\s]*?<td[^>]*?>/','|',$markup);
 			$markup=  preg_replace('/<\/td[^>]*?>[\r\n\t\s]*?<td[^>]*?>/','|',$markup);
 			$markup=  preg_replace('/<\/th[^>]*?>[\r\n\t\s]*?<th[^>]*?>/','|',$markup);
 			$markup=  preg_replace('/<\/td[^>]*?>[\r\n\t\s]*?<\/tr>/',"|\n",$markup);
