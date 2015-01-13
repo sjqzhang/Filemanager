@@ -27,14 +27,33 @@ if($action=='load'){
 
     phpQuery::newDocument($html);
 
-    //foreach(pq('.code,.codebody,.bodycode') as $code){
+//    foreach(pq('.code,.codebody,.bodycode') as $code){
+//
+//        $htmlcode=pq($code)->htmlOuter();
+//        $htmlinner=pq($code)->html();
+//        //echo $htmlinner;
+//
+//       $html=  str_replace($htmlcode,'<pre>'+$htmlinner+'</pre>',$html);
+//
+//        echo $html;die;
+//      // $html=  str_replace($htmlcode,"xxxxxxxxxxxxxxxxxxxxxx",$html);
+//
+//        //pq($code)->replacewith("<div>\r\n```\r\n"+$htmlcode+"\n```\r\n</div>");
+//     //   pq($code)->replaceWith("<pre>"+$htmlcode+"</pre>");
+//
+//    }
+//
+//
+//    echo $html;die;
+//
+//
+//    phpQuery::newDocument($html);
 
-    //   pq($code).replaceAll("```\n"+pq($code)->htmlOuter()+"\n```");
-
-    //}
+    //echo $html;die;
 
 	$content= pq($selector)->htmlOuter();
 
+   // echo $content;die;
 
 	$md= $h2md->parse($content,$istable);
 	$options= $h2md->get_container($html);

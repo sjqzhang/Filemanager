@@ -26,7 +26,7 @@ class Html2md {
 
 		function h2md($match){
 			$h=trim($match[1]);
-			return "\r\n#### ".$h."\r\n";
+			return "\r\n#### ".$h."\r\n\r\n";
 		}
 
 		function url2md($match){
@@ -63,7 +63,7 @@ class Html2md {
 				}
 
 			}
-			return join("\n",$rows);
+			return "\r\n\r\n".join("\n",$rows)."\r\n";
 			return $markup;
 		}
 
@@ -76,7 +76,7 @@ class Html2md {
         if( preg_match_all('/href="#([^"]+?)"/',$content,$links)){
             return $links[1];
         } else {
-            return '';
+            return array();
         }
 
     }
@@ -88,11 +88,11 @@ class Html2md {
 
        $links=$this->get_inner_link($markup);
 
-       $links=join('|',$links);
+       if(count($links)>0){
+            $links=join('|',$links);
+	        $markup= preg_replace_callback("/<\w[^>]*id=\"($links)\"[^>]*?>/", array($this,'innerlink2md'),$markup);
 
-
-	    $markup= preg_replace_callback("/<\w[^>]*id=\"($links)\"[^>]*?>/", array($this,'innerlink2md'),$markup);
-
+       }
 
 
 
@@ -253,7 +253,8 @@ class Html2md {
                 $content=$snoopy->results;
             }
 			if(empty($content)) {
-				echo "html is empty\n";die;
+				echo "html is empty\n";
+                $content="<!DOCTYPE html><html><head></head><body></body></html>";
 			}
 			$content=$this->html2utf8($content);
 			$content=$this->url_real_replace($content,$ABSOLUTE_URL,$RELATIVE_URL);
