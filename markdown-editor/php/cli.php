@@ -8,12 +8,11 @@ include_once(dirname(__FILE__).'/doc2md.php');
 $options= get_argv();
 
 
-var_dump($options);
 
 
 function get_argv(){
 
-    $ops="u:c:s:d:t:";
+    $ops="u:c:s:d:t:h";
     $options= getopt($ops,array());
     return $options;
 
@@ -28,12 +27,24 @@ function help(){
 u: url
 c: url container
 s: content selector
+t: tranlate table
+h: help
 
 eot;
 
     echo $help;
+    die;
 
 }
+
+
+if(isset($options['h'])||count($options)<3){
+
+    help();
+
+}
+
+var_dump($options);
 
 function mkdirs($dir){
 	return is_dir($dir) or (mkdirs(dirname($dir)) and mkdir($dir,0777));
