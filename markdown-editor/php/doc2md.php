@@ -250,7 +250,8 @@ class Html2md {
             $uname= php_uname();
             if(preg_match('/linux/i',$uname)){
 
-               $content=  shell_exec("curl '$url' -o-");
+               $content=  shell_exec("curl -L -c /tmp/abc.jar '$url' -o-");
+              // echo $content;
 
                 //error_log($content,3,'/var/www/mahua/log');
 
@@ -262,11 +263,18 @@ class Html2md {
                 $content=$snoopy->results;
             }
 			if(empty($content)) {
-				echo "html is empty\n";
+			//	echo "html is empty\n";
                 $content="<!DOCTYPE html><html><head></head><body></body></html>";
 			}
+            if(preg_match('/<html[^>]*>[\s\S]+/i',$content,$htmls)){
+                $content= $htmls[0];
+            }
 			$content=$this->html2utf8($content);
 			$content=$this->url_real_replace($content,$ABSOLUTE_URL,$RELATIVE_URL);
+
+
+            return $content;
+
 		}
 		//    echo $content;
 		return $content;
@@ -320,8 +328,10 @@ class Html2md {
 		if(!isset($match[1])){
 			preg_match('/charset="?([a-zA-Z0-9-]+)"?/i',$content,$match);
 		}
-		if(isset( $match[1])){
-			if(strtolower( $match[1])!='utf-8'){
+
+        if(isset( $match[1])){
+			if(strtolower(trim( $match[1]))!='utf-8'&&strtolower(trim( $match[1]))!='uft-8'){
+
 				$pattens=array(
 					'/charset="([a-zA-Z0-9-]+)"/i',
 					'/charset=([a-zA-Z0-9-]+)"/i',
