@@ -35,6 +35,9 @@ eot;
 
 }
 
+function mkdirs($dir){
+	return is_dir($dir) or (mkdirs(dirname($dir)) and mkdir($dir,0777));
+}
 
 function get_urls($options){
     $urls=array();
@@ -79,6 +82,13 @@ function download($url, $options){
     $markdown= $md->parse($content,$istable);
 
     if(isset( $options['d'])){
+
+
+      if(!is_dir($options['d'])){
+
+            mkdirs($options['d']);
+
+      }
 
       $filename=$options['d'].'/'.trim($url['title']).".md";
 

@@ -17,6 +17,7 @@ class Html2md {
 		}
 		function innerlink2md($match){
             if(preg_match('/id=[\"\'](.*?)[\'\"]/',$match[0],$match1)){
+
 				return preg_replace('/id=[\"\'](.*?)[\'\"]/', $match[0]."&lt;span id=\"$1\" &gt;&lt;/span&gt;", $match1[0]);
 			//	return $match[0]."&lt;span id=\"$1\" &gt;&lt;/span&gt;";
 			}else {
@@ -70,10 +71,16 @@ class Html2md {
 
 
 
+    function url_decode(&$url){
+
+        $url= urldecode($url);
+    }
+
 
     function get_inner_link($content){
 
         if( preg_match_all('/href="#([^"]+?)"/',$content,$links)){
+            array_walk($links[1],array($this,'url_decode'));
             return $links[1];
         } else {
             return array();
@@ -90,6 +97,7 @@ class Html2md {
 
        if(count($links)>0){
             $links=join('|',$links);
+            //echo $links;die;
 	        $markup= preg_replace_callback("/<\w[^>]*id=\"($links)\"[^>]*?>/", array($this,'innerlink2md'),$markup);
 
        }
@@ -162,12 +170,13 @@ class Html2md {
 			'/&lt;/i',
 			'/&gt;/i',
 			'/&quot;/i',
+			'/&amp;/i',
 			),array(
 			" ",
 			"<",
 			">",
 			'"',
-			"",
+			"&",
 			),$markup);
 
 
