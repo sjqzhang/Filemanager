@@ -267,7 +267,7 @@ class Html2md {
                 $content="<!DOCTYPE html><html><head></head><body></body></html>";
 			}
             if(preg_match('/<html[^>]*>[\s\S]+/i',$content,$htmls)){
-                $content= $htmls[0];
+                $content="<!DOCTYPE html>".$htmls[0];
             }
 			$content=$this->html2utf8($content);
 			$content=$this->url_real_replace($content,$ABSOLUTE_URL,$RELATIVE_URL);

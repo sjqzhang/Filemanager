@@ -51,6 +51,28 @@ function export($filepath, $html){
 
 }
 
+function exportwiki($filepath, $html){
+
+
+    $dir= dirname(__FILE__);
+    $tmpfile=tmpfile();
+    require_once($dir.'/md2wiki.php');
+
+      $wiki=new Md2Wiki();
+
+    $tpl=$wiki->parse($html);
+
+    //$tpl= read($dir."/../export.html");
+    //$tpl= preg_replace('/\{html\}/',$html,$tpl);
+    Header("Content-type: application/octet-stream");
+    Header("Accept-Ranges: bytes");
+    Header("Accept-Length: ".strlen($tpl));
+    //Header("Content-Disposition: attachment; filename=".basename($filepath));
+    Header("Content-Disposition: attachment; filename="."wiki.txt");
+
+    echo $tpl;
+
+}
 
 if($action=='load'){
 
@@ -73,5 +95,15 @@ if($action=='load'){
     export($filepath,$html);
 
 
+} else if($action=='exportwiki'){
+
+
+
+    $html=$_REQUEST['html'];
+
+    exportwiki($filepath,$html);
+
+
 }
+
 
