@@ -64,7 +64,7 @@ class Html2md {
 				}
 
 			}
-			return "\r\n\r\n".join("\n",$rows)."\r\n";
+			return "\r\n\r\n".join("\n",$rows)."\r\n\r\n";
 			return $markup;
 		}
 
